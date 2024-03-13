@@ -6,6 +6,7 @@
         {
 
             app.MapGet("/pozdrav", () => Results.Ok("hey"));
+            app.MapGet("/test", () => Results.Ok("test"));
 
         }
     }
