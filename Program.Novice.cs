@@ -13,11 +13,11 @@ namespace EFuel_API
             var databaseName = "eFuel";
             var collectionName = "Novice";
 
+            var database = client.GetDatabase(databaseName);
+            var collection = database.GetCollection<BsonDocument>(collectionName);
+
             app.MapGet("/pridobiNovice", async () =>
             {
-
-                var database = client.GetDatabase(databaseName);
-                var collection = database.GetCollection<BsonDocument>(collectionName);
 
                 var result = await collection.Find(_ => true).ToListAsync();
 
@@ -25,6 +25,26 @@ namespace EFuel_API
                 var json = result.ToJson(jsonSerializer);
 
                 return Results.Ok(json);
+            });
+
+            app.MapGet("/pridobiNoviceTest", async () =>
+            {
+                var result = await collection.Find(_ => true).ToListAsync();
+
+                var novicaList = result.Select(doc => new NovicaModel
+                {
+                    Id = doc["_id"].AsObjectId.ToString(),
+                    Naslov = doc["naslov"].AsString,
+                    Novica = doc["novica"].AsString,
+                    DatumObjave = doc["datum_objave"].AsString
+                }).ToList();
+
+                foreach (var novica in novicaList)
+                {
+                    Console.WriteLine(novica);
+                }
+
+                return Results.Ok();
             });
 
             app.MapGet("/pridobiNovice/{date}", async (string date) =>
@@ -35,8 +55,6 @@ namespace EFuel_API
                     return Results.BadRequest("Invalid date format. Please provide the date in yyyy-MM-dd format.");
                 }
 
-                var database = client.GetDatabase(databaseName);
-                var collection = database.GetCollection<BsonDocument>(collectionName);
 
                 var filter = Builders<BsonDocument>.Filter.Eq("datum_objave", specifiedDate.ToString("yyyy-MM-dd"));
                 var result = await collection.Find(filter).ToListAsync();
@@ -49,8 +67,7 @@ namespace EFuel_API
 
             app.MapGet("/pridobiNovice/{fromDate}/{toDate}", async (DateTime fromDate, DateTime toDate) =>
             {
-                var database = client.GetDatabase(databaseName);
-                var collection = database.GetCollection<BsonDocument>(collectionName);
+
 
                 var filter = Builders<BsonDocument>.Filter.And(
                     Builders<BsonDocument>.Filter.Gte("datum_objave", fromDate.ToString("yyyy-MM-dd")),
@@ -67,8 +84,6 @@ namespace EFuel_API
 
             app.MapDelete("/izbrisiNovico/{id}", async (string id) =>
             {
-                var database = client.GetDatabase(databaseName);
-                var collection = database.GetCollection<BsonDocument>(collectionName);
 
                 var filter = Builders<BsonDocument>.Filter.Eq("_id", ObjectId.Parse(id));
 
