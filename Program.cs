@@ -1,13 +1,9 @@
 
-using MongoDB.Driver;
 using MongoDB.Bson;
-using System;
+using MongoDB.Driver;
 
 namespace EFuel_API
 {
-
-    
-
     public partial class Program
     {
         public static void Main(string[] args)
