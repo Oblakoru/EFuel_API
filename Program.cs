@@ -52,7 +52,7 @@ namespace EFuel_API
             }
 
 
-            Novice(app);
+            Novice(app, client);
             Servis(app);
             GPS(app);
             Pay(app);
