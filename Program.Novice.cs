@@ -20,7 +20,7 @@ namespace EFuel_API
 
                 var result = await collection.Find(_ => true).ToListAsync();
 
-                var jsonSerializer = new MongoDB.Bson.IO.JsonWriterSettings { OutputMode = MongoDB.Bson.IO.JsonOutputMode.Strict };
+                var jsonSerializer = new MongoDB.Bson.IO.JsonWriterSettings { OutputMode = MongoDB.Bson.IO.JsonOutputMode.JavaScript };
                 var json = result.ToJson(jsonSerializer);
 
                 return Results.Ok(json);

@@ -52,11 +52,12 @@ namespace EFuel_API
             }
 
 
+            // Se pošlje client vsem funkcijam, ki potrebujejo povezavo z bazo - glej Servis kot primer
             Novice(app, client);
-            Servis(app);
-            GPS(app);
-            Pay(app);
-            PrijavaRegistracija(app);
+            Servis(app, client);
+            GPS(app, client);
+            Pay(app, client);
+            PrijavaRegistracija(app, client);
 
             app.Run();
         }

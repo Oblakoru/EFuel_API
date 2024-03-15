@@ -1,10 +1,11 @@
 ﻿using EFuel_API.Models;
+using MongoDB.Driver;
 
 namespace EFuel_API
 {
     public partial class Program
     {
-        public static void Servis(WebApplication app)
+        public static void Servis(WebApplication app, MongoClient client)
         {
             app.MapGet("/servis", () => Results.Ok("servis"));
 
