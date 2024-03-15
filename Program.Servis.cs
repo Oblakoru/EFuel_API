@@ -1,5 +1,7 @@
 ﻿using EFuel_API.Models;
+using MongoDB.Bson;
 using MongoDB.Driver;
+using System.Linq;
 
 namespace EFuel_API
 {
@@ -7,35 +9,58 @@ namespace EFuel_API
     {
         public static void Servis(WebApplication app, MongoClient client)
         {
+            var databaseName = "eFuel";
+            var collectionName = "Bencinska_postaja";
+
+            var database = client.GetDatabase(databaseName);
+            var collection = database.GetCollection<BsonDocument>(collectionName);
+
             app.MapGet("/servis", () => Results.Ok("servis"));
 
-            app.MapPost("/najblizjiServis", (LokacijaUporabnika lokacija) =>
+            app.MapPost("/najblizjiServisImeServisa", async (string lokacija) =>
             {
-                var servis = NajdiNajblizjiServis(lokacija);
-                return Results.Ok(servis);
-            });
-        }
+                var servisiList =await PridobiSeznamServisev(collection);
 
-        /* TESTNI PODATEK - lokacija štuka
+                return servisiList.Where(x=> x.Lokacija == lokacija).ToList();
+            });
+
+            /* TESTNI PODATEK - lokacija štuka
             {
                 "zemljepisnaSirina": 46.5635072,
                 "zemljepisnaDolzina": 15.6257464
             }
-        */
+            */
+            app.MapPost("/najblizjiServisLokacijaUporabnika", async (LokacijaUporabnika lokacija) =>
+            {
+                // klic na bazo: baza vrne seznam servisov
+                Servis servis1 = new Servis("1", "Petrol MB Mlinska", 46.55735936254534, 15.654900389190303);
+                Servis servis2 = new Servis("2", "Petrol MB Partizanska", 46.56480963033872, 15.659228706081425);
+                Servis servis3 = new Servis("3", "Petrol MB Gosposvetska", 46.56499044700252, 15.626309844557982);
+                List<Servis> servisiList = new() { servis1, servis2, servis3 };
+                //
 
-        private static object NajdiNajblizjiServis(LokacijaUporabnika lokacija)
+                foreach (Servis servis in servisiList)
+                    servis.Razdalja = IzracunRazdalje(lokacija, servis);
+
+                return servisiList.OrderBy(x => x.Razdalja).ToList().First();
+
+            });
+        }
+
+        private static async Task<List<Servis>> PridobiSeznamServisev(IMongoCollection<BsonDocument> collection)
         {
-            // klic na bazo: baza vrne seznam servisov
-            Servis servis1 = new Servis(1, "Petrol MB Mlinska", 46.55735936254534, 15.654900389190303);
-            Servis servis2 = new Servis(2, "Petrol MB Partizanska", 46.56480963033872, 15.659228706081425);
-            Servis servis3 = new Servis(3, "Petrol MB Gosposvetska", 46.56499044700252, 15.626309844557982);
-            List<Servis> ListServisov = new() { servis1, servis2, servis3 };
-            //
+            var result = await collection.Find(_ => true).ToListAsync();
 
-            foreach (Servis servis in ListServisov)
-                servis.Razdalja = IzracunRazdalje(lokacija, servis);
+            var servisiList = result.Select(doc =>
+            {
+                var id = doc["_id"].AsObjectId.ToString();
+                var imePostaja = doc.GetValue("Ime_postaja", "").AsString;
+                var lokacija = doc.GetValue("Lokacija", "").AsString;
+                var delovniCas = doc.GetValue("delavni_cas", "").AsString;
+                return new Servis(id, imePostaja, lokacija, delovniCas);
+            }).ToList();
 
-            return ListServisov.OrderBy(x => x.Razdalja).ToList().First();
+            return servisiList;
         }
 
         private static double IzracunRazdalje(LokacijaUporabnika uporabnik, Servis servis)
