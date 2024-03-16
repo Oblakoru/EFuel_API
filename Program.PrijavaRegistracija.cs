@@ -1,4 +1,5 @@
 ﻿using EFuel_API.Models;
+using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Text.RegularExpressions;
@@ -19,7 +20,7 @@ namespace EFuel_API
             app.MapGet("/login", () => Results.Ok("login"));
 
 
-            app.MapGet("/register", async (Uporabnik uporabnik) => {
+            app.MapGet("/register", async ([FromBody]Uporabnik uporabnik) => {
 
                 if (uporabnik != null)
                 {
