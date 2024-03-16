@@ -10,6 +10,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFuel_API.Tests", "..\EFuel
 		{FE3E0806-60A4-4C1A-BDC3-398B38FFF4E8} = {FE3E0806-60A4-4C1A-BDC3-398B38FFF4E8}
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFuel_API_Testing", "..\EFuel_API_Testing\EFuel_API_Testing.csproj", "{0784270D-AD65-4EDE-B731-D85CB8E42213}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,6 +26,10 @@ Global
 		{C36805B1-511C-4D6F-89DE-B4BB94885633}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C36805B1-511C-4D6F-89DE-B4BB94885633}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C36805B1-511C-4D6F-89DE-B4BB94885633}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0784270D-AD65-4EDE-B731-D85CB8E42213}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0784270D-AD65-4EDE-B731-D85CB8E42213}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0784270D-AD65-4EDE-B731-D85CB8E42213}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0784270D-AD65-4EDE-B731-D85CB8E42213}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
