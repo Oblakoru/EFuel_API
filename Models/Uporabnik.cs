@@ -14,7 +14,7 @@ namespace EFuel_API.Models
         public string Priimek { get; set; }
         public string E_posta { get; set; }
         public string Geslo { get; set; }
-        public int? Telefon { get; set; }
+        public string? Telefon { get; set; }
 
         public override string ToString()
         {
