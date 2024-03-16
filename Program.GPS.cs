@@ -14,14 +14,14 @@ namespace EFuel_API
              "New York" 40.7128, -74.0060
              */
 
-            app.MapPost("/gps", ([FromBody] LokacijaUporabnika lokacijaUporabnika) => {
+            app.MapGet("/gps", (string zemljepisnaDolzina, string zemljepisnaSirina) => {
 
-                if(string.IsNullOrEmpty(lokacijaUporabnika.ZemljepisnaDolzina.ToString()) || string.IsNullOrEmpty(lokacijaUporabnika.ZemljepisnaSirina.ToString()))
+                if(string.IsNullOrEmpty(zemljepisnaDolzina.ToString()) || string.IsNullOrEmpty(zemljepisnaSirina.ToString()))
                 {
                     return Results.BadRequest("Napačno podana lokacija!");
                 }
 
-                var googleMaps = $"https://www.google.com/maps/place/{lokacijaUporabnika.ZemljepisnaSirina},{lokacijaUporabnika.ZemljepisnaDolzina}";
+                var googleMaps = $"https://www.google.com/maps/place/{zemljepisnaSirina},{zemljepisnaDolzina}";
 
                 return Results.Ok(googleMaps);
             });
