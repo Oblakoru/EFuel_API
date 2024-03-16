@@ -17,11 +17,19 @@ namespace EFuel_API_Testing.TestModels
         public string Priimek { get; set; }
         public string E_posta { get; set; }
         public string Geslo { get; set; }
-        public string Telefon { get; set; }
+        public string? Telefon { get; set; }
 
         public override string ToString()
         {
             return $"Id: {Id}, Ime: {Ime}, Priimek: {Priimek}, E_posta: {E_posta}, Telefon: {Telefon}";
         }
+    }
+
+    public class Login
+    {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string E_posta { get; set; }
+        public string Geslo { get; set; }
     }
 }
