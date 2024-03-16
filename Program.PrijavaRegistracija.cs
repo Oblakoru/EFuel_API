@@ -12,7 +12,7 @@ namespace EFuel_API
             var name = "eFuel";
             var collectionName = "Uporabniki";
 
-            var db = client.GetDatabase("name");
+            var db = client.GetDatabase(name);
             var collection = db.GetCollection<BsonDocument>(collectionName);
 
 

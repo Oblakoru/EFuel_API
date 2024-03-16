@@ -18,7 +18,7 @@ namespace EFuel_API
                
             });
 
-            app.Run();
+            //app.Run();
         }
     }
 
