@@ -17,7 +17,32 @@ namespace EFuel_API
             var collection = db.GetCollection<BsonDocument>(collectionName);
 
 
-            app.MapGet("/login", () => Results.Ok("login"));
+            app.MapPost("/login", async ([FromBody]Uporabnik uporabnik) =>
+            {
+                if (uporabnik != null)
+                {
+                    if (string.IsNullOrEmpty(uporabnik.E_posta) || string.IsNullOrEmpty(uporabnik.Geslo))
+                    {
+                        return Results.BadRequest("Niso podani vsi zahtevani podatki!");
+                    }
+
+                    var user = await collection.Find(Builders<BsonDocument>.Filter.And(
+                        Builders<BsonDocument>.Filter.Eq("E_posta", uporabnik.E_posta),
+                        Builders<BsonDocument>.Filter.Eq("Geslo", uporabnik.Geslo)
+                    )).FirstOrDefaultAsync();
+
+                    if (user == null)
+                    {
+                        return Results.BadRequest("Napačna e-pošta ali geslo!");
+                    }
+
+                    return Results.Ok("Uspešna prijava!");
+                }
+                else
+                {
+                    return Results.BadRequest("Napačno podani podatki!");
+                }
+            });
 
 
             app.MapPost("/register", async ([FromBody]Uporabnik uporabnik) => {
