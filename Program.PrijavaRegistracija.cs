@@ -17,7 +17,7 @@ namespace EFuel_API
             var collection = db.GetCollection<BsonDocument>(collectionName);
 
 
-            app.MapPost("/login", async ([FromBody]Uporabnik uporabnik) =>
+            app.MapPost("/login", async ([FromBody]Login uporabnik) =>
             {
                 if (uporabnik != null)
                 {

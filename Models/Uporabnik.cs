@@ -22,4 +22,12 @@ namespace EFuel_API.Models
         }
     }
 
+    public class Login
+    {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string E_posta { get; set; }
+        public string Geslo { get; set; }
+    }
+
 }
