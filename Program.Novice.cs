@@ -27,16 +27,18 @@ namespace EFuel_API
                 {
                     var result = await collection.Find(_ => true).ToListAsync();
 
-                    var jsonSerializer = new MongoDB.Bson.IO.JsonWriterSettings { OutputMode = MongoDB.Bson.IO.JsonOutputMode.JavaScript };
-                    var json = result.ToJson(jsonSerializer);
+                    var novicaList = new List<Dictionary<string, object>>();
 
-                    return Results.Ok(json);
+                    foreach (var novica in result)
+                    {
+                        novicaList.Add(novica.ToDictionary());
+                    }
+
+                    return Results.Ok(novicaList);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"An error occurred: {ex}");
-
-                    return Results.StatusCode(500);
+                    return Results.BadRequest($"Napaka: {ex.Message}");
                 }
             });
 
@@ -172,13 +174,14 @@ namespace EFuel_API
             {
                 try
                 {
+                    var datumObjave = DateTime.UtcNow;
+
                     var novicaDocument = new BsonDocument
-                        {
+                    {
                         { "naslov", novica.Naslov },
                         { "novica", novica.Novica },
-                        { "datum_objave", novica.DatumObjave }
-                    };
-                   
+                        { "datum_objave", datumObjave.ToString("yyyy-MM-dd") }
+                    };                  
 
                     await collection.InsertOneAsync(novicaDocument);
 
@@ -189,7 +192,7 @@ namespace EFuel_API
                         Id = insertedId,
                         Naslov = novica.Naslov,
                         Novica = novica.Novica,
-                        DatumObjave = novica.DatumObjave
+                        DatumObjave = datumObjave.ToString() 
                     };
 
                     return Results.Created($"/dodajNovico/{insertedId}", insertedNovica);
@@ -209,8 +212,12 @@ namespace EFuel_API
 
             app.MapDelete("/izbrisiNovico/{id}", async (string id) =>
             {
+                if (!ObjectId.TryParse(id, out ObjectId objectId))
+                {
+                    return Results.BadRequest("Invalid id format");
+                }
 
-                var filter = Builders<BsonDocument>.Filter.Eq("_id", ObjectId.Parse(id));
+                var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
 
                 var result = await collection.DeleteOneAsync(filter);
 
