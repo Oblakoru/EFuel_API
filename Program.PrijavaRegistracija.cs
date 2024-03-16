@@ -63,7 +63,7 @@ namespace EFuel_API
 
                     if (userObstaja)
                     {
-                        return Results.BadRequest("Epošta več obstaja!");
+                        return Results.BadRequest("Eposta ze v uporabi");
                     }
 
                     uporabnik.Id = ObjectId.GenerateNewId().ToString();
