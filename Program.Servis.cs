@@ -7,63 +7,60 @@ namespace EFuel_API
 {
     public partial class Program
     {
-        public static void Servis(WebApplication app, MongoClient client)
-        {
-            var databaseName = "eFuel";
-            var collectionName = "Bencinska_postaja";
+		public static void Servis(WebApplication app, MongoClient client)
+		{
+			var databaseName = "eFuel";
+			var collectionName = "Bencinska_postaja";
 
-            var database = client.GetDatabase(databaseName);
-            var collection = database.GetCollection<BsonDocument>(collectionName);
+			var database = client.GetDatabase(databaseName);
+			var collection = database.GetCollection<BsonDocument>(collectionName);
 
-            app.MapGet("/servis", () => Results.Ok("servis"));
+			app.MapGet("/servis", () => Results.Ok("servis"));
 
-            app.MapPost("/najblizjiServisImeServisa", async (string lokacija) =>
-            {
-                var servisiList =await PridobiSeznamServisev(collection);
+			app.MapPost("/imeServisa", async (string lokacija) =>
+			{
+				var servisiList = await PridobiSeznamServisev(collection);
 
-                return servisiList.Where(x=> x.Lokacija == lokacija).ToList();
-            });
+				return servisiList.Where(x => x.Lokacija == lokacija).ToList();
+			});
 
-            /* TESTNI PODATEK - lokacija štuka
-            {
-                "zemljepisnaSirina": 46.5635072,
-                "zemljepisnaDolzina": 15.6257464
-            }
-            */
-            app.MapPost("/najblizjiServisLokacijaUporabnika", async (LokacijaUporabnika lokacija) =>
-            {
-                // klic na bazo: baza vrne seznam servisov
-                Servis servis1 = new Servis("1", "Petrol MB Mlinska", 46.55735936254534, 15.654900389190303);
-                Servis servis2 = new Servis("2", "Petrol MB Partizanska", 46.56480963033872, 15.659228706081425);
-                Servis servis3 = new Servis("3", "Petrol MB Gosposvetska", 46.56499044700252, 15.626309844557982);
-                List<Servis> servisiList = new() { servis1, servis2, servis3 };
-                //
+			/* TESTNI PODATEK - lokacija štuka
+			{
+				"zemljepisnaSirina": 46.5635072,
+				"zemljepisnaDolzina": 15.6257464
+			}
+			*/
+			app.MapPost("/najblizjiServisUporabniku", async (LokacijaUporabnika lokacija) =>
+			{
+				var servisiList = await PridobiSeznamServisev(collection);
 
-                foreach (Servis servis in servisiList)
-                    servis.Razdalja = IzracunRazdalje(lokacija, servis);
+				foreach (Servis servis in servisiList)
+					servis.Razdalja = IzracunRazdalje(lokacija, servis);
 
-                return servisiList.OrderBy(x => x.Razdalja).ToList().First();
+				return servisiList.OrderBy(x => x.Razdalja).ToList().First();
 
-            });
-        }
+			});
+		}
 
-        private static async Task<List<Servis>> PridobiSeznamServisev(IMongoCollection<BsonDocument> collection)
-        {
-            var result = await collection.Find(_ => true).ToListAsync();
+		private static async Task<List<Servis>> PridobiSeznamServisev(IMongoCollection<BsonDocument> collection)
+		{
+			var result = await collection.Find(_ => true).ToListAsync();
 
-            var servisiList = result.Select(doc =>
-            {
-                var id = doc["_id"].AsObjectId.ToString();
-                var imePostaja = doc.GetValue("Ime_postaja", "").AsString;
-                var lokacija = doc.GetValue("Lokacija", "").AsString;
-                var delovniCas = doc.GetValue("delavni_cas", "").AsString;
-                return new Servis(id, imePostaja, lokacija, delovniCas);
-            }).ToList();
+			var servisiList = result.Select(doc =>
+			{
+				var id = doc["_id"].AsObjectId.ToString();
+				var imePostaja = doc.GetValue("Ime_postaja", "").AsString;
+				var sirina = doc.GetValue("ZemljepisnaSirina", 0).AsDouble;
+				var dolzina = doc.GetValue("ZemljepisnaDolzina", 0).AsDouble;
+				var lokacija = doc.GetValue("Lokacija", "").AsString;
+				var delovniCas = doc.GetValue("delavni_cas", "").AsString;
+				return new Servis(id, imePostaja, sirina, dolzina, lokacija, delovniCas);
+			}).ToList();
 
-            return servisiList;
-        }
+			return servisiList;
+		}
 
-        private static double IzracunRazdalje(LokacijaUporabnika uporabnik, Servis servis)
+		private static double IzracunRazdalje(LokacijaUporabnika uporabnik, Servis servis)
         {
             double earthRadiusKm = 6371.0;
 
