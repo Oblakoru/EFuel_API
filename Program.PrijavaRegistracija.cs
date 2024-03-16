@@ -20,7 +20,7 @@ namespace EFuel_API
             app.MapGet("/login", () => Results.Ok("login"));
 
 
-            app.MapGet("/register", async ([FromBody]Uporabnik uporabnik) => {
+            app.MapPost("/register", async ([FromBody]Uporabnik uporabnik) => {
 
                 if (uporabnik != null)
                 {
@@ -40,6 +40,8 @@ namespace EFuel_API
                     {
                         return Results.BadRequest("Epošta več obstaja!");
                     }
+
+                    uporabnik.Id = ObjectId.GenerateNewId().ToString();
 
                     await collection.InsertOneAsync(uporabnik.ToBsonDocument());
 

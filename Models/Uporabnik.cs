@@ -9,7 +9,7 @@ namespace EFuel_API.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public int Id { get; set; }
+        public string Id { get; set; }
         public string Ime { get; set; }
         public string Priimek { get; set; }
         public string E_posta { get; set; }
